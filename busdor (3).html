@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Bus d'Or — Transdev Express Roissy</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Verdana&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100dvh;font-family:Verdana,Geneva,sans-serif;background:#003B7A;color:#fff;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+:root{
+  --blue:#003B7A;--blue2:#004FA3;--blue3:#0062CC;
+  --green:#78BE20;--green2:#5DA015;
+  --white:#FFFFFF;--muted:#8AABCC;--border:#1A5599;
+  --card:#002D63;--card2:#00204A;
+  --gold:#F5C842;--gold2:#D4A800;
+  --red:#E8392A;--green-ok:#78BE20;
+}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 50% at 50% -5%,#0062CC30 0%,transparent 60%),
+             radial-gradient(ellipse 40% 30% at 0% 100%,#78BE2015 0%,transparent 50%)}
+#confetti{position:fixed;inset:0;z-index:200;pointer-events:none}
+#app{position:relative;z-index:1;max-width:540px;margin:0 auto;padding:0 16px 80px;display:flex;flex-direction:column;align-items:center;gap:14px;min-height:100dvh}
+
+/* HEADER */
+.header{width:100%;padding:20px 0 6px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.header-logo{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 16px;width:100%}
+.logo-stripe{width:6px;height:40px;border-radius:3px;flex-shrink:0;background:linear-gradient(180deg,var(--green),var(--blue3))}
+.logo-texts{flex:1}
+.logo-brand{font-size:13px;font-weight:700;letter-spacing:2px;color:var(--white);text-transform:uppercase}
+.logo-sub2{font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-top:1px;text-transform:uppercase}
+.logo-badge{background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0}
+.header-title{text-align:center}
+.title-crown{font-size:36px;line-height:1}
+.title-main{font-size:32px;font-weight:700;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(135deg,#FFE066,var(--gold),#D4A800);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 20px #F5C84250);line-height:1}
+.title-sub{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:4px}
+
+/* TEMPS REF BANNER */
+.temps-banner{width:100%;background:var(--card2);border:1.5px solid var(--green);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.temps-icon{font-size:22px;flex-shrink:0}
+.temps-info{flex:1}
+.temps-lbl{font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.temps-val{font-size:18px;font-weight:700;color:var(--green);margin-top:2px}
+.temps-edit-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:10px;color:var(--muted);cursor:pointer;font-family:Verdana,sans-serif;transition:all .2s;text-transform:uppercase}
+.temps-edit-btn:active{transform:scale(.95)}
+
+/* TABS */
+.tabs{display:flex;gap:4px;width:100%;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:4px}
+.tab{flex:1;padding:10px 8px;border-radius:9px;border:none;cursor:pointer;font-family:Verdana,sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);background:transparent;transition:all .2s;text-align:center;text-transform:uppercase}
+.tab.on{background:linear-gradient(135deg,var(--blue3),var(--blue2));color:#fff;box-shadow:0 0 14px #0062CC50;border:1px solid var(--blue3)}
+
+/* SCREENS */
+.scr{width:100%;display:none;flex-direction:column;align-items:center;gap:14px}
+.scr.on{display:flex}
+
+/* CARD */
+.card{width:100%;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,var(--green),var(--blue3))}
+.card-body{padding-left:4px}
+.card-title{font-size:9px;font-weight:700;letter-spacing:2.5px;color:var(--green);text-transform:uppercase;margin-bottom:14px}
+
+/* INPUTS */
+.lbl{display:block;font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px;text-transform:uppercase}
+.inp{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;font-family:Verdana,sans-serif;font-size:15px;font-weight:700;color:var(--white);outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--green)}
+.inp::placeholder{color:var(--muted);font-weight:400;font-size:13px}
+.inp-row{display:flex;gap:10px;width:100%}
+.inp-wrap{flex:1;display:flex;flex-direction:column}
+.mt12{margin-top:12px}
+.time-sep{font-size:22px;font-weight:700;color:var(--muted);align-self:flex-end;padding-bottom:13px;flex-shrink:0}
+
+/* BUTTONS */
+.btn{width:100%;padding:15px;border:none;border-radius:12px;cursor:pointer;font-family:Verdana,sans-serif;font-size:13px;font-weight:700;letter-spacing:.5px;transition:all .2s;text-transform:uppercase}
+.btn-green{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;box-shadow:0 4px 20px #78BE2030}
+.btn-green:active{transform:scale(.97)}
+.btn-green:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--muted);margin-top:6px}
+.btn-ghost:active{transform:scale(.97)}
+
+/* COUNTERS */
+.counter-grid{display:flex;flex-direction:column;gap:10px;width:100%}
+.counter-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:12px}
+.c-icon{font-size:22px;flex-shrink:0;width:32px;text-align:center}
+.c-info{flex:1;min-width:0}
+.c-name{font-size:12px;font-weight:700;color:var(--white)}
+.c-penalty{font-size:9px;color:var(--red);margin-top:2px;letter-spacing:.5px}
+.c-controls{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ctr-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;cursor:pointer;transition:all .15s;color:var(--white);flex-shrink:0;user-select:none}
+.ctr-btn:active{transform:scale(.88)}
+.ctr-btn.plus{border-color:#E8392A60;color:var(--red)}
+.ctr-btn.plus:active{background:#E8392A20}
+.ctr-btn.minus{border-color:#78BE2060;color:var(--green-ok)}
+.ctr-btn.minus:active{background:#78BE2020}
+.ctr-val{font-size:24px;font-weight:700;color:var(--white);min-width:30px;text-align:center}
+
+/* ZONES ARRET */
+.zone-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.zone-btn{padding:16px 8px;border-radius:12px;border:2px solid transparent;cursor:pointer;font-family:Verdana,sans-serif;font-size:11px;font-weight:700;transition:all .2s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--card2);color:var(--muted);text-transform:uppercase;-webkit-tap-highlight-color:transparent}
+.zone-btn:active{transform:scale(.95)}
+.zone-pts{font-size:13px;font-weight:700;margin-top:2px}
+.zone-noir{border-color:#55555530}
+.zone-bleu{border-color:#3B82F630}
+.zone-rouge{border-color:#EF444430}
+.zone-jaune{border-color:#F5C84230}
+.zone-noir.on{border-color:#888;background:#1a1a1a20;color:#ccc}
+.zone-bleu.on{border-color:#3B82F6;background:#3B82F615;color:#60A5FA}
+.zone-rouge.on{border-color:#EF4444;background:#EF444415;color:#F87171}
+.zone-jaune.on{border-color:var(--gold);background:#F5C84215;color:var(--gold)}
+
+/* ZONES TEMPS */
+.zone-temps-grid{display:flex;flex-direction:column;gap:8px;width:100%}
+.zt-btn{width:100%;padding:13px 15px;border-radius:12px;border:2px solid transparent;cursor:pointer;font-family:Verdana,sans-serif;font-size:12px;font-weight:700;transition:all .2s;display:flex;align-items:center;justify-content:space-between;background:var(--card2);color:var(--muted);text-transform:uppercase;-webkit-tap-highlight-color:transparent}
+.zt-btn:active{transform:scale(.98)}
+.zt-pts{font-size:14px;font-weight:700}
+.zt-0{border-color:#78BE2030}
+.zt-1{border-color:#3B82F630}
+.zt-2{border-color:#F5C84230}
+.zt-3{border-color:#55555530}
+.zt-0.on{border-color:var(--green);background:#78BE2015;color:var(--green)}
+.zt-1.on{border-color:#60A5FA;background:#3B82F615;color:#60A5FA}
+.zt-2.on{border-color:var(--gold);background:#F5C84215;color:var(--gold)}
+.zt-3.on{border-color:#888;background:#1a1a1a20;color:#aaa}
+.ecart-info{font-size:11px;color:var(--muted);text-align:center;margin-top:6px;font-style:italic;min-height:16px}
+
+/* BADGE CANDIDAT */
+.cand-badge{width:100%;background:var(--card);border:1px solid var(--green);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:14px}
+.cand-av{width:46px;height:46px;border-radius:12px;flex-shrink:0;background:linear-gradient(135deg,var(--blue3),var(--blue2));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;border:2px solid var(--green)}
+.cand-name{font-size:15px;font-weight:700;color:var(--white)}
+.cand-meta{font-size:10px;color:var(--muted);margin-top:3px}
+.cand-meta span{color:var(--gold);font-weight:700}
+
+/* BREAKDOWN */
+.breakdown{width:100%;display:flex;flex-direction:column;gap:6px}
+.bk-row{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:var(--card2);border-radius:10px;border:1px solid var(--border)}
+.bk-label{font-size:11px;color:var(--muted)}
+.bk-val{font-size:12px;font-weight:700}
+.bk-val.neg{color:var(--red)}
+.bk-val.pos{color:var(--green-ok)}
+.bk-val.neu{color:var(--gold)}
+.bk-val.info{color:var(--muted)}
+.bk-total{border-color:var(--green)!important;background:#78BE2010!important}
+.bk-total .bk-label{color:var(--white);font-weight:700;font-size:12px}
+.bk-total .bk-val{font-size:18px;color:var(--green)}
+
+/* LEADERBOARD */
+.lb-top{width:100%;display:flex;align-items:center;justify-content:space-between}
+.lb-title{font-size:18px;font-weight:700;letter-spacing:1px}
+.lb-refresh{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:10px;color:var(--muted);cursor:pointer;font-family:Verdana,sans-serif;transition:all .2s;text-transform:uppercase}
+.lb-refresh:active{transform:scale(.95)}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:6px;width:100%}
+.pod{flex:1;display:flex;flex-direction:column;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 6px}
+.pod.p1{border-color:var(--gold);box-shadow:0 0 20px #F5C84225}
+.pod.p2{border-color:#B0B0B030}
+.pod.p3{border-color:#CD7F3230}
+.pod-medal{font-size:22px;margin-bottom:4px}
+.pod-av{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;margin-bottom:6px;background:var(--card2);color:#fff}
+.p1 .pod-av{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000}
+.p2 .pod-av{background:linear-gradient(135deg,#B0B0B0,#808080);color:#fff}
+.p3 .pod-av{background:linear-gradient(135deg,#CD7F32,#A05A20);color:#fff}
+.pod-name{font-size:10px;font-weight:700;text-align:center;word-break:break-all;color:var(--white)}
+.pod-pts{font-size:13px;font-weight:700;color:var(--gold);margin-top:3px}
+.hr{width:100%;height:1px;background:var(--border)}
+.lb-list{width:100%;display:flex;flex-direction:column;gap:7px}
+.lb-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.lb-rank{font-size:11px;color:var(--muted);width:22px;text-align:center;flex-shrink:0;font-weight:700}
+.lb-av{width:36px;height:36px;border-radius:9px;background:var(--blue2);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.lb-info{flex:1;min-width:0}
+.lb-name{font-size:13px;font-weight:700;color:var(--white)}
+.lb-sub{font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:.3px;text-transform:uppercase;line-height:1.6}
+.lb-pts{font-size:14px;font-weight:700;color:var(--gold);flex-shrink:0}
+.lb-del{width:32px;height:32px;border-radius:8px;border:1px solid #E8392A40;background:#E8392A12;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:14px;transition:all .2s;color:var(--red)}
+.lb-del:active{transform:scale(.88);background:#E8392A30}
+.empty{text-align:center;color:var(--muted);font-size:11px;padding:32px 0;line-height:2;width:100%;letter-spacing:.5px}
+
+/* CONFIRM */
+.confirm-overlay{position:fixed;inset:0;z-index:300;background:#00000090;display:flex;align-items:center;justify-content:center;padding:24px}
+.confirm-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:320px;width:100%;text-align:center}
+.confirm-title{font-size:14px;font-weight:700;margin-bottom:8px}
+.confirm-sub{font-size:11px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.confirm-btns{display:flex;gap:10px}
+.confirm-btns button{flex:1;padding:12px;border-radius:10px;border:none;cursor:pointer;font-family:Verdana,sans-serif;font-size:12px;font-weight:700;transition:all .2s}
+.confirm-yes{background:var(--red);color:#fff}
+.confirm-yes:active{transform:scale(.97)}
+.confirm-no{background:var(--card2);border:1px solid var(--border);color:var(--muted)}
+.confirm-no:active{transform:scale(.97)}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--green);border-radius:10px;padding:11px 22px;font-size:12px;color:var(--white);z-index:300;transition:transform .3s ease;white-space:nowrap;box-shadow:0 4px 24px #00000080;pointer-events:none;font-weight:700;letter-spacing:.5px}
+#toast.show{transform:translateX(-50%) translateY(0)}
+.spinner{width:16px;height:16px;border:2px solid #ffffff30;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <div class="logo-stripe"></div>
+      <div class="logo-texts">
+        <div class="logo-brand">Transdev</div>
+        <div class="logo-sub2">Express Roissy</div>
+      </div>
+      <div class="logo-badge">Jury</div>
+    </div>
+    <div class="header-title">
+      <div class="title-crown">🏆</div>
+      <div class="title-main">Bus d'Or</div>
+      <div class="title-sub">Épreuve pratique — Fiche jury</div>
+    </div>
+  </div>
+
+  <!-- TEMPS DE RÉFÉRENCE -->
+  <div class="temps-banner">
+    <div class="temps-icon">⏱️</div>
+    <div class="temps-info">
+      <div class="temps-lbl">Temps de référence</div>
+      <div class="temps-val" id="tempsRefDisplay">Non défini</div>
+    </div>
+    <button class="temps-edit-btn" id="btnEditTemps">✏️ Définir</button>
+  </div>
+
+  <!-- CARD SAISIE TEMPS REF (cachée) -->
+  <div class="card" id="cardTempsRef" style="display:none">
+    <div class="card-body">
+      <div class="card-title">⏱️ Temps de référence (MM:SS)</div>
+      <div class="inp-row">
+        <div class="inp-wrap">
+          <span class="lbl">Minutes</span>
+          <input class="inp" id="inpRefMin" type="number" placeholder="00" min="0" max="99" style="text-align:center">
+        </div>
+        <div class="time-sep">:</div>
+        <div class="inp-wrap">
+          <span class="lbl">Secondes</span>
+          <input class="inp" id="inpRefSec" type="number" placeholder="00" min="0" max="59" style="text-align:center">
+        </div>
+      </div>
+      <button class="btn btn-green mt12" id="btnSaveTemps">✅ CONFIRMER LE TEMPS</button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" id="tab-eval">📋 Évaluation</button>
+    <button class="tab" id="tab-lb">🏆 Classement</button>
+  </div>
+
+  <!-- SCREEN HOME -->
+  <div class="scr on" id="s-home">
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">① Identité du candidat</div>
+        <span class="lbl">Nom</span>
+        <input class="inp" id="inpNom" type="text" placeholder="Nom de famille" autocomplete="off" autocorrect="off" spellcheck="false">
+        <div class="inp-row mt12">
+          <div class="inp-wrap">
+            <span class="lbl">Prénom</span>
+            <input class="inp" id="inpPrenom" type="text" placeholder="Prénom" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="inp-wrap">
+            <span class="lbl">Score de départ</span>
+            <input class="inp" id="inpDepart" type="number" placeholder="ex : 2750" min="0" max="3000">
+          </div>
+        </div>
+        <div class="inp-row mt12">
+          <div class="inp-wrap">
+            <span class="lbl">Score épreuve écrite</span>
+            <input class="inp" id="inpEcrit" type="number" placeholder="ex : 85" min="0" max="100">
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-green" id="btnDemarrer">DÉMARRER L'ÉPREUVE →</button>
+  </div>
+
+  <!-- SCREEN EPREUVE -->
+  <div class="scr" id="s-epreuve">
+
+    <div class="cand-badge">
+      <div class="cand-av" id="candAv">A</div>
+      <div>
+        <div class="cand-name" id="candName">—</div>
+        <div class="cand-meta">Score de départ : <span id="candDepart">—</span> pts &nbsp;·&nbsp; Écrit : <span id="candEcrit">—</span>/100</div>
+      </div>
+    </div>
+
+    <!-- MANOEUVRE -->
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">② Manœuvre — Pénalités</div>
+        <div class="counter-grid">
+          <div class="counter-item">
+            <div class="c-icon">🟠</div>
+            <div class="c-info">
+              <div class="c-name">Plot touché</div>
+              <div class="c-penalty">− 100 pts / plot</div>
+            </div>
+            <div class="c-controls">
+              <button class="ctr-btn minus" id="minus-plotTouche">−</button>
+              <div class="ctr-val" id="v-plotTouche">0</div>
+              <button class="ctr-btn plus" id="plus-plotTouche">+</button>
+            </div>
+          </div>
+          <div class="counter-item">
+            <div class="c-icon">🔴</div>
+            <div class="c-info">
+              <div class="c-name">Plot renversé</div>
+              <div class="c-penalty">− 200 pts / plot</div>
+            </div>
+            <div class="c-controls">
+              <button class="ctr-btn minus" id="minus-plotRenverse">−</button>
+              <div class="ctr-val" id="v-plotRenverse">0</div>
+              <button class="ctr-btn plus" id="plus-plotRenverse">+</button>
+            </div>
+          </div>
+          <div class="counter-item">
+            <div class="c-icon">🟡</div>
+            <div class="c-info">
+              <div class="c-name">Piquet touché</div>
+              <div class="c-penalty">− 100 pts / piquet</div>
+            </div>
+            <div class="c-controls">
+              <button class="ctr-btn minus" id="minus-piquetTouche">−</button>
+              <div class="ctr-val" id="v-piquetTouche">0</div>
+              <button class="ctr-btn plus" id="plus-piquetTouche">+</button>
+            </div>
+          </div>
+          <div class="counter-item">
+            <div class="c-icon">🔴</div>
+            <div class="c-info">
+              <div class="c-name">Piquet renversé</div>
+              <div class="c-penalty">− 200 pts / piquet</div>
+            </div>
+            <div class="c-controls">
+              <button class="ctr-btn minus" id="minus-piquetRenverse">−</button>
+              <div class="ctr-val" id="v-piquetRenverse">0</div>
+              <button class="ctr-btn plus" id="plus-piquetRenverse">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARRET PRECISION -->
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">③ Arrêt de précision</div>
+        <div class="zone-grid">
+          <button class="zone-btn zone-noir" id="z-noir">
+            <span style="font-size:24px">⬛</span>
+            <span>Zone Noire</span>
+            <span class="zone-pts">+ 100 pts</span>
+          </button>
+          <button class="zone-btn zone-bleu" id="z-bleu">
+            <span style="font-size:24px">🟦</span>
+            <span>Zone Bleue</span>
+            <span class="zone-pts">+ 200 pts</span>
+          </button>
+          <button class="zone-btn zone-rouge" id="z-rouge">
+            <span style="font-size:24px">🟥</span>
+            <span>Zone Rouge</span>
+            <span class="zone-pts">+ 300 pts</span>
+          </button>
+          <button class="zone-btn zone-jaune" id="z-jaune">
+            <span style="font-size:24px">🟨</span>
+            <span>Zone Jaune</span>
+            <span class="zone-pts">+ 400 pts</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEMPS REALISE -->
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">④ Temps réalisé</div>
+        <div class="inp-row">
+          <div class="inp-wrap">
+            <span class="lbl">Minutes</span>
+            <input class="inp" id="inpCandMin" type="number" placeholder="00" min="0" max="99" style="text-align:center">
+          </div>
+          <div class="time-sep">:</div>
+          <div class="inp-wrap">
+            <span class="lbl">Secondes</span>
+            <input class="inp" id="inpCandSec" type="number" placeholder="00" min="0" max="59" style="text-align:center">
+          </div>
+        </div>
+        <div class="ecart-info" id="ecartInfo">Saisir le temps réalisé par le candidat</div>
+        <div class="zone-temps-grid mt12">
+          <button class="zt-btn zt-0" id="zt-0">
+            <span>🟢 Écart 0 – 5 sec</span>
+            <span class="zt-pts">+ 300 pts</span>
+          </button>
+          <button class="zt-btn zt-1" id="zt-1">
+            <span>🔵 Écart 6 – 10 sec</span>
+            <span class="zt-pts">+ 200 pts</span>
+          </button>
+          <button class="zt-btn zt-2" id="zt-2">
+            <span>🟡 Écart 11 – 20 sec</span>
+            <span class="zt-pts">+ 100 pts</span>
+          </button>
+          <button class="zt-btn zt-3" id="zt-3">
+            <span>⚫ Écart > 20 sec</span>
+            <span class="zt-pts">0 pt</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCORE FINAL -->
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">⑤ Score final</div>
+        <div class="breakdown" id="breakdown"></div>
+      </div>
+    </div>
+
+    <button class="btn btn-green" id="btnValider" disabled>✅ VALIDER ET ENREGISTRER</button>
+    <button class="btn btn-ghost" id="btnReset">↩ Nouveau candidat</button>
+
+  </div>
+
+  <!-- SCREEN CLASSEMENT -->
+  <div class="scr" id="s-lb">
+    <div class="lb-top">
+      <div class="lb-title">🏆 Classement</div>
+      <button class="lb-refresh" id="btnRefreshLb">↻ Actualiser</button>
+    </div>
+    <div class="podium" id="podium"></div>
+    <div class="hr"></div>
+    <div class="lb-list" id="lbList"><div class="empty">Chargement…</div></div>
+    <button class="btn btn-ghost" id="btnRetourEval">← Retour évaluation</button>
+  </div>
+
+</div>
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// SUPABASE
+// ═══════════════════════════════════════════
+const SB_URL = 'https://ujyyzdcowyzqieejziyb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqeXl6ZGNvd3l6cWllZWp6aXliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNTQyMjksImV4cCI6MjA5MTkzMDIyOX0.JRYfCjPE0m1wJuQSV0XoK_C8WOBwn7t38qyheKH0fVU';
+
+async function sbPost(body) {
+  const r = await fetch(SB_URL + '/rest/v1/busdor', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error(await r.text());
+}
+
+async function sbGet() {
+  const r = await fetch(SB_URL + '/rest/v1/busdor?select=id,prenom,nom,score_depart,score_ecrit,penalite,zone_pts,temps_pts,score_final,zone_arret,zone_temps,date_eval&order=score_final.desc&limit=50', {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+async function sbDelete(id) {
+  const r = await fetch(SB_URL + '/rest/v1/busdor?id=eq.' + id, {
+    method: 'DELETE',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }
+  });
+  if (!r.ok) throw new Error(await r.text());
+}
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+const ZONE_PTS   = { noir: 100, bleu: 200, rouge: 300, jaune: 400 };
+const ZONE_LABEL = { noir: '⬛ Zone Noire', bleu: '🟦 Zone Bleue', rouge: '🟥 Zone Rouge', jaune: '🟨 Zone Jaune' };
+const TEMPS_PTS  = [300, 200, 100, 0];
+const TEMPS_LBL  = ['🟢 0–5 sec', '🔵 6–10 sec', '🟡 11–20 sec', '⚫ >20 sec'];
+
+let tempsRefSec = null;
+let cand        = {};
+let ctrs        = { plotTouche: 0, plotRenverse: 0, piquetTouche: 0, piquetRenverse: 0 };
+let zone        = null;
+let zoneTemps   = null;
+
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
+function $(id) { return document.getElementById(id); }
+function showScr(id) { document.querySelectorAll('.scr').forEach(s => s.classList.remove('on')); $(id).classList.add('on'); }
+function fmtTime(sec) { return String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0'); }
+
+let toastTimer;
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function goTab(t) {
+  $('tab-eval').classList.toggle('on', t === 'eval');
+  $('tab-lb').classList.toggle('on', t === 'lb');
+  if (t === 'lb') { showScr('s-lb'); loadLb(); }
+  else {
+    const active = ['s-home', 's-epreuve'].find(id => $(id).classList.contains('on'));
+    showScr(active || 's-home');
+  }
+}
+
+// ═══════════════════════════════════════════
+// TEMPS DE RÉFÉRENCE
+// ═══════════════════════════════════════════
+function toggleTempsRef() {
+  const card = $('cardTempsRef');
+  const hidden = card.style.display === 'none' || card.style.display === '';
+  card.style.display = hidden ? 'block' : 'none';
+  if (hidden) setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+}
+
+function saveTempsRef() {
+  const m = parseInt($('inpRefMin').value);
+  const s = parseInt($('inpRefSec').value);
+  if (isNaN(m) || isNaN(s) || m < 0 || s < 0 || s > 59) { toast('⚠️ Format invalide (ex: 04 min 32 sec)'); return; }
+  tempsRefSec = m * 60 + s;
+  $('tempsRefDisplay').textContent = fmtTime(tempsRefSec);
+  $('btnEditTemps').textContent = '✏️ Modifier';
+  $('cardTempsRef').style.display = 'none';
+  toast('✅ Temps de référence : ' + fmtTime(tempsRefSec));
+}
+
+// ═══════════════════════════════════════════
+// ÉTAPE 1 : DÉMARRER
+// ═══════════════════════════════════════════
+function demarrer() {
+  const nom    = $('inpNom').value.trim();
+  const prenom = $('inpPrenom').value.trim();
+  const depart = parseInt($('inpDepart').value);
+  const ecrit  = parseInt($('inpEcrit').value);
+  if (!nom)    { toast('⚠️ Saisis le nom du candidat'); return; }
+  if (!prenom) { toast('⚠️ Saisis le prénom du candidat'); return; }
+  if (isNaN(depart) || depart < 0 || depart > 3000) { toast('⚠️ Score de départ invalide (0 – 3000)'); return; }
+  if (isNaN(ecrit)  || ecrit  < 0 || ecrit  > 100)  { toast('⚠️ Score écrit invalide (0 – 100)'); return; }
+
+  cand = { nom, prenom, depart, ecrit };
+  ctrs = { plotTouche: 0, plotRenverse: 0, piquetTouche: 0, piquetRenverse: 0 };
+  zone = null;
+  zoneTemps = null;
+
+  ['plotTouche', 'plotRenverse', 'piquetTouche', 'piquetRenverse'].forEach(k => $('v-' + k).textContent = '0');
+  document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.zt-btn').forEach(b => b.classList.remove('on'));
+  $('inpCandMin').value = '';
+  $('inpCandSec').value = '';
+  $('ecartInfo').textContent = 'Saisir le temps réalisé par le candidat';
+  $('candAv').textContent    = prenom[0].toUpperCase();
+  $('candName').textContent  = prenom + ' ' + nom.toUpperCase();
+  $('candDepart').textContent = depart;
+  $('candEcrit').textContent  = ecrit;
+
+  showScr('s-epreuve');
+  updateBreakdown();
+}
+
+function resetHome() {
+  $('inpNom').value    = '';
+  $('inpPrenom').value = '';
+  $('inpDepart').value = '';
+  $('inpEcrit').value  = '';
+  showScr('s-home');
+  $('tab-eval').classList.add('on');
+  $('tab-lb').classList.remove('on');
+}
+
+// ═══════════════════════════════════════════
+// COMPTEURS
+// ═══════════════════════════════════════════
+function adjust(key, delta) {
+  ctrs[key] = Math.max(0, ctrs[key] + delta);
+  $('v-' + key).textContent = ctrs[key];
+  updateBreakdown();
+}
+
+// ═══════════════════════════════════════════
+// ZONE ARRET
+// ═══════════════════════════════════════════
+function selectZone(z) {
+  zone = (zone === z) ? null : z;
+  document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('on'));
+  if (zone) $('z-' + zone).classList.add('on');
+  updateBreakdown();
+}
+
+// ═══════════════════════════════════════════
+// TEMPS RÉALISÉ
+// ═══════════════════════════════════════════
+function calcEcart() {
+  const m = parseInt($('inpCandMin').value);
+  const s = parseInt($('inpCandSec').value);
+  if (isNaN(m) && isNaN(s)) return;
+  if (tempsRefSec === null) { toast('⚠️ Définis d\'abord le temps de référence !'); return; }
+  const candSec = ((isNaN(m) ? 0 : m) * 60) + (isNaN(s) ? 0 : s);
+  const ecart   = Math.abs(candSec - tempsRefSec);
+  let z = ecart <= 5 ? 0 : ecart <= 10 ? 1 : ecart <= 20 ? 2 : 3;
+  $('ecartInfo').textContent = 'Temps : ' + fmtTime(candSec) + ' — Écart : ' + ecart + ' sec → ' + TEMPS_PTS[z] + ' pts';
+  selectZoneTemps(z);
+}
+
+function selectZoneTemps(z) {
+  zoneTemps = z;
+  document.querySelectorAll('.zt-btn').forEach(b => b.classList.remove('on'));
+  $('zt-' + z).classList.add('on');
+  updateBreakdown();
+}
+
+// ═══════════════════════════════════════════
+// CALCUL
+// ═══════════════════════════════════════════
+function calc() {
+  const pen      = ctrs.plotTouche * -100 + ctrs.plotRenverse * -200 + ctrs.piquetTouche * -100 + ctrs.piquetRenverse * -200;
+  const zonePts  = zone      ? ZONE_PTS[zone]        : 0;
+  const tempsPts = zoneTemps !== null ? TEMPS_PTS[zoneTemps] : 0;
+  const total    = cand.depart + pen + zonePts + tempsPts;
+  return { pen, zonePts, tempsPts, total };
+}
+
+function updateBreakdown() {
+  const { pen, zonePts, tempsPts, total } = calc();
+  const rows = [
+    { label: '🎯 Score de départ',      val: cand.depart,    cls: 'neu' },
+    { label: '📝 Score épreuve écrite', val: cand.ecrit + ' / 100', cls: 'info', raw: true },
+  ];
+  if (ctrs.plotTouche    > 0) rows.push({ label: '🟠 Plots touchés × '    + ctrs.plotTouche,    val: ctrs.plotTouche    * -100, cls: 'neg' });
+  if (ctrs.plotRenverse  > 0) rows.push({ label: '🔴 Plots renversés × '  + ctrs.plotRenverse,  val: ctrs.plotRenverse  * -200, cls: 'neg' });
+  if (ctrs.piquetTouche  > 0) rows.push({ label: '🟡 Piquets touchés × '  + ctrs.piquetTouche,  val: ctrs.piquetTouche  * -100, cls: 'neg' });
+  if (ctrs.piquetRenverse > 0) rows.push({ label: '🔴 Piquets renversés × ' + ctrs.piquetRenverse, val: ctrs.piquetRenverse * -200, cls: 'neg' });
+  if (zone)           rows.push({ label: ZONE_LABEL[zone],                        val: zonePts,  cls: 'pos' });
+  if (zoneTemps !== null) rows.push({ label: '⏱️ Temps (' + TEMPS_LBL[zoneTemps] + ')', val: tempsPts, cls: zoneTemps < 3 ? 'pos' : 'info' });
+  rows.push({ label: '🏆 SCORE FINAL', val: total, cls: 'neu', total: true });
+
+  $('breakdown').innerHTML = rows.map(r =>
+    '<div class="bk-row' + (r.total ? ' bk-total' : '') + '">' +
+    '<span class="bk-label">' + r.label + '</span>' +
+    '<span class="bk-val ' + r.cls + '">' + (r.raw ? r.val : (r.val >= 0 ? '+' : '') + r.val + ' pts') + '</span>' +
+    '</div>'
+  ).join('');
+
+  $('btnValider').disabled = (!zone || zoneTemps === null);
+}
+
+// ═══════════════════════════════════════════
+// VALIDER
+// ═══════════════════════════════════════════
+async function valider() {
+  const { pen, zonePts, tempsPts, total } = calc();
+  const btn = $('btnValider');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Enregistrement…';
+  try {
+    await sbPost({
+      nom:             cand.nom,
+      prenom:          cand.prenom,
+      score_depart:    cand.depart,
+      score_ecrit:     cand.ecrit,
+      plot_touche:     ctrs.plotTouche,
+      plot_renverse:   ctrs.plotRenverse,
+      piquet_touche:   ctrs.piquetTouche,
+      piquet_renverse: ctrs.piquetRenverse,
+      zone_arret:      zone,
+      penalite:        pen,
+      zone_pts:        zonePts,
+      zone_temps:      zoneTemps !== null ? TEMPS_LBL[zoneTemps] : null,
+      temps_pts:       tempsPts,
+      score_final:     total,
+      date_eval:       new Date().toLocaleDateString('fr-FR')
+    });
+    toast('✅ ' + cand.prenom + ' ' + cand.nom.toUpperCase() + ' — ' + total + ' pts enregistrés !');
+    lanceConfetti();
+    setTimeout(() => { resetHome(); goTab('lb'); }, 2000);
+  } catch(e) {
+    console.error(e);
+    toast('❌ Erreur : ' + e.message);
+    btn.disabled = false;
+    btn.innerHTML = '✅ VALIDER ET ENREGISTRER';
+  }
+}
+
+// ═══════════════════════════════════════════
+// CLASSEMENT
+// ═══════════════════════════════════════════
+async function loadLb() {
+  $('podium').innerHTML = '';
+  $('lbList').innerHTML = '<div class="empty"><span class="spinner"></span> Chargement…</div>';
+  try {
+    const data = await sbGet();
+    if (!data || !data.length) {
+      $('lbList').innerHTML = '<div class="empty">Aucun candidat enregistré.<br>Lance la première évaluation ! 🚌</div>';
+      return;
+    }
+    renderLb(data);
+  } catch(e) {
+    $('lbList').innerHTML = '<div class="empty">❌ Erreur de chargement<br><small>' + e.message + '</small></div>';
+  }
+}
+
+function renderLb(data) {
+  const medals = ['🥇', '🥈', '🥉'];
+  const top3   = data.slice(0, 3);
+  const order  = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : top3.length === 2 ? [top3[1], top3[0]] : top3;
+  const ranks  = top3.length >= 3 ? [2, 1, 3] : top3.length === 2 ? [2, 1] : [1];
+
+  const pod = $('podium'); pod.innerHTML = '';
+  order.forEach((e, i) => {
+    const r = ranks[i];
+    const d = document.createElement('div');
+    d.className = 'pod p' + r;
+    d.innerHTML = '<div class="pod-medal">' + medals[r-1] + '</div>' +
+      '<div class="pod-av">' + e.prenom[0].toUpperCase() + '</div>' +
+      '<div class="pod-name">' + e.prenom + '<br>' + e.nom.toUpperCase() + '</div>' +
+      '<div class="pod-pts">' + e.score_final + ' pts</div>';
+    pod.appendChild(d);
+  });
+
+  const list = $('lbList'); list.innerHTML = '';
+  data.forEach((e, i) => {
+    const row = document.createElement('div');
+    row.className = 'lb-row';
+    row.innerHTML =
+      '<div class="lb-rank">' + (i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1) + '</div>' +
+      '<div class="lb-av">' + e.prenom[0].toUpperCase() + '</div>' +
+      '<div class="lb-info">' +
+        '<div class="lb-name">' + e.prenom + ' ' + e.nom.toUpperCase() + '</div>' +
+        '<div class="lb-sub">' +
+          'Écrit : ' + (e.score_ecrit ?? '—') + '/100 · ' +
+          'Pén : ' + (e.penalite ?? 0) + ' pts · ' +
+          'Arrêt : +' + (e.zone_pts ?? 0) + ' pts · ' +
+          'Temps : +' + (e.temps_pts ?? 0) + ' pts · ' +
+          (e.date_eval ?? '') +
+        '</div>' +
+      '</div>' +
+      '<div class="lb-pts">' + e.score_final + ' pts</div>' +
+      '<button class="lb-del" data-id="' + e.id + '" data-name="' + e.prenom + ' ' + e.nom.toUpperCase() + '">🗑</button>';
+    list.appendChild(row);
+  });
+
+  // Event listeners sur les boutons supprimer
+  document.querySelectorAll('.lb-del').forEach(btn => {
+    btn.addEventListener('click', function() {
+      confirmDelete(this.dataset.id, this.dataset.name);
+    });
+  });
+}
+
+function confirmDelete(id, name) {
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.id = 'confirmOverlay';
+  overlay.innerHTML =
+    '<div class="confirm-box">' +
+    '<div class="confirm-title">🗑 Supprimer ce score ?</div>' +
+    '<div class="confirm-sub">' + name + '<br>Cette action est irréversible.</div>' +
+    '<div class="confirm-btns">' +
+    '<button class="confirm-no" id="btnConfirmNo">Annuler</button>' +
+    '<button class="confirm-yes" id="btnConfirmYes">Supprimer</button>' +
+    '</div></div>';
+  document.body.appendChild(overlay);
+  document.getElementById('btnConfirmNo').addEventListener('click', () => overlay.remove());
+  document.getElementById('btnConfirmYes').addEventListener('click', async () => {
+    overlay.remove();
+    try { await sbDelete(id); toast('🗑 Score supprimé'); loadLb(); }
+    catch(e) { toast('❌ Erreur : ' + e.message); }
+  });
+}
+
+// ═══════════════════════════════════════════
+// CONFETTI
+// ═══════════════════════════════════════════
+function lanceConfetti() {
+  const cv = $('confetti'), ctx = cv.getContext('2d');
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  const pieces = Array.from({ length: 130 }, () => ({
+    x: Math.random() * cv.width, y: -10,
+    r: Math.random() * 6 + 3,
+    color: ['#F5C842','#78BE20','#FFFFFF','#003B7A','#E8392A'][Math.floor(Math.random() * 5)],
+    speed: Math.random() * 3 + 2, angle: Math.random() * Math.PI * 2
+  }));
+  let f = 0;
+  const anim = setInterval(() => {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    pieces.forEach(p => {
+      p.y += p.speed; p.x += Math.sin(p.angle) * 1.5; p.angle += 0.04;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, 1 - f / 100); ctx.fill();
+    });
+    f++;
+    if (f > 100) { clearInterval(anim); ctx.clearRect(0, 0, cv.width, cv.height); }
+  }, 16);
+}
+
+// ═══════════════════════════════════════════
+// EVENT LISTENERS — tous ici, après le DOM
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Tabs
+  $('tab-eval').addEventListener('click', () => goTab('eval'));
+  $('tab-lb').addEventListener('click', () => goTab('lb'));
+  $('btnRetourEval').addEventListener('click', () => goTab('eval'));
+  $('btnRefreshLb').addEventListener('click', loadLb);
+
+  // Temps de référence
+  $('btnEditTemps').addEventListener('click', toggleTempsRef);
+  $('btnSaveTemps').addEventListener('click', saveTempsRef);
+
+  // Home
+  $('btnDemarrer').addEventListener('click', demarrer);
+  $('btnReset').addEventListener('click', resetHome);
+
+  // Compteurs
+  ['plotTouche', 'plotRenverse', 'piquetTouche', 'piquetRenverse'].forEach(k => {
+    $('minus-' + k).addEventListener('click', () => adjust(k, -1));
+    $('plus-' + k).addEventListener('click', () => adjust(k, 1));
+    // Touch support
+    $('minus-' + k).addEventListener('touchstart', e => { e.preventDefault(); adjust(k, -1); }, { passive: false });
+    $('plus-' + k).addEventListener('touchstart', e => { e.preventDefault(); adjust(k, 1); }, { passive: false });
+  });
+
+  // Zones arrêt
+  ['noir', 'bleu', 'rouge', 'jaune'].forEach(z => {
+    $('z-' + z).addEventListener('click', () => selectZone(z));
+  });
+
+  // Zones temps (manuel)
+  [0, 1, 2, 3].forEach(z => {
+    $('zt-' + z).addEventListener('click', () => selectZoneTemps(z));
+  });
+
+  // Temps réalisé auto-calcul
+  $('inpCandMin').addEventListener('input', calcEcart);
+  $('inpCandSec').addEventListener('input', calcEcart);
+
+  // Valider
+  $('btnValider').addEventListener('click', valider);
+
+  // Init
+  updateBreakdown();
+});
+</script>
+</body>
+</html>
